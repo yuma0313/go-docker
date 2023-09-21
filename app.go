@@ -8,7 +8,7 @@ import (
 func helloHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 		case http.MethodGet:
-			fmt.Fprintf(w, "GETメソッドaaaa")
+			fmt.Fprintf(w, "GETメソッド")
 		case http.MethodPost:
 			fmt.Fprintf(w, "POSTメソッド")
 		case http.MethodPut:
