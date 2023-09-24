@@ -1,12 +1,41 @@
 version: "3.8"
 services:
   go:
-    container_name: air_sample
+    container_name: app
     volumes:
       - ./:/project/
     working_dir: /project
     tty: true
-    build: "./"
+    build:
+      context: .
+      dockerfile: app.dockerfile
     ports:
       - 8080:8080
+    depends_on:
+      - db
     command: sh -c 'go mod tidy && air'
+
+  db:
+    container_name: db
+    build:
+      context: .
+      dockerfile: db.dockerfile
+    tty: true
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: "test"
+      MYSQL_USER: "tester"
+      MYSQL_PASSWORD: "password"
+    volumes:
+      - type: volume
+        source: mysql_data
+        target: /var/lib/mysql
+    networks:
+      - default
+
+networks:
+  default:
+volumes:
+  mysql_data:

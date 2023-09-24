@@ -24,7 +24,7 @@ var todos = allTodos{
 	},
 	{
 		ID:     "2",
-		Title:  "プロジェクトhhhh",
+		Title:  "プロジェクト",
 		Detail: "新しいプロジェクトの計画を立てる",
 	},
 	{
