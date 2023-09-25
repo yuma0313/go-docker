@@ -12,7 +12,8 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command: sh -c 'go mod tidy && air'
 
   db:
@@ -28,10 +29,26 @@ services:
       MYSQL_DATABASE: "test"
       MYSQL_USER: "tester"
       MYSQL_PASSWORD: "password"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "--password=root",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - type: volume
         source: mysql_data
         target: /var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - default
 
