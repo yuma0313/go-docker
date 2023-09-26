@@ -9,6 +9,10 @@ import (
 
 func GetTodos(c echo.Context) error {
 	todos := []model.Todo{}
+	if err := c.Bind(&todos); err != nil {
+		return err
+	}
+
 	model.DB.Find(&todos)
 	return c.JSON(http.StatusOK, todos)
 }
@@ -36,7 +40,6 @@ func CreateTodo(c echo.Context) error {
 }
 
 func UpdateTodo(c echo.Context) error {
-	//id := c.Param("id")
 	todo := model.Todo{}
 	if err := c.Bind(&todo); err != nil {
 		return err
