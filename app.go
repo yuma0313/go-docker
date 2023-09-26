@@ -1,6 +1,8 @@
 package main
 
 import (
+	"docker-go/controller"
+	"docker-go/model"
 	"encoding/json"
 	"net/http"
 
@@ -90,15 +92,28 @@ func deleteTodo(c echo.Context) error {
 	return echo.NewHTTPError(http.StatusNotFound, "TODOが見つかりません")
 }
 
+func connect(c echo.Context) error {
+	db, _ := model.DB.DB()
+	defer db.Close()
+	err := db.Ping()
+	if err != nil {
+		return c.String(http.StatusInternalServerError, "DB接続失敗しました")
+	} else {
+		return c.String(http.StatusOK, "DB接続しました")
+	}
+}
+
+
 func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.GET("/todos", getTodos)
-	e.GET("/todo/:id", getTodo)
-	e.POST("/todo", postTodo)
-	e.PUT("/todo/:id", updateTodo)
-	e.DELETE("/todo/:id", deleteTodo)
+	e.GET("/", connect)
+	e.GET("/todos", controller.GetTodos)
+	e.GET("/todo/:id", controller.GetTodo)
+	e.POST("/todo", controller.CreateTodo)
+	e.PUT("/todo/:id", controller.UpdateTodo)
+	e.DELETE("/todo/:id", controller.DeleteTodo)
 	e.Logger.Fatal(e.Start(":8080"))
 }
